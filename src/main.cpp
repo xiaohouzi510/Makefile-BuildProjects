@@ -5,6 +5,8 @@
 #include "my.h"
 #include "self.h"
 
+void last();
+
 int main(int argc,char **argv)
 {
 	test();
@@ -12,6 +14,7 @@ int main(int argc,char **argv)
 	tow();
 	my();
 	self();
+	last();
 	printf("this main\n");
 	return 0;
 }
