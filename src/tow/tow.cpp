@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "tow.h"
 
-void tow()
+void tow::display()
 {
 	printf("this tow\n");	
 }

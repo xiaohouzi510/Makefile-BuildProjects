@@ -1,41 +1,38 @@
-#目标文件目录
-TARGET_DIR="../debug"
+#可执行文件
+BIN_NAME := main 
+#编译的后缀文件
+SRC_EXT = cpp
+SRC_PATH = .
+COMPILE_FLAGS = -Wall -g
+debug: export CXXFLAGS := $(CXXFLAGS) $(COMPILE_FLAGS)
+debug: export BUILD_PATH := ../debug
 
-#所有目录
-ALL_DIR = $(shell find -type d)
+SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)')
+ALL_DIR = $(shell find $(SRC_PATH) -type d)
+INCLUDES += $(patsubst %,-I%,$(ALL_DIR))
+CUR_DIR = $(shell pwd)
 
-#include 目录
-INCLUDE_DIR = $(patsubst %,-I%,$(ALL_DIR))
+OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
+DEPS = $(OBJECTS:.o=.d)
 
-#所有 .cpp 文件，即依赖文件
-ALL_DEPEND = $(shell find -type f -name "*cpp")
+debug: dirs
+	@$(MAKE) $(BIN_NAME) --no-print-directory
 
-#所有 .o 文件，即目标文件
-ALL_TARGET = $(patsubst ./%.cpp,../debug/%.o,$(ALL_DEPEND))
+#创建目录
+dirs:
+	@mkdir -p $(dir $(OBJECTS))
 
-#生成 .o 目录变量
-define MAKE_TARGET_DIR
-	$(shell mkdir -p $(TARGET_DIR)/$(1)) 
-endef
-#生成 .o 目录
-$(foreach dir,$(ALL_DIR),$(eval $(call MAKE_TARGET_DIR,$(dir))))
+$(BIN_NAME): $(OBJECTS)
+	@echo -e "\033[31mLinking CXX executable $(CUR_DIR)/$@\033[0m"
+	@$(CXX) $(OBJECTS) -o $@
 
-main : $(ALL_TARGET)
-	g++ -g -o $@ $^
+-include $(DEPS)
 
-#编译所有 cpp 变量
-define COMPILE_CPP
-#ONE 变量用于去掉.，TOW 用于去掉 /
-ONE=$(patsubst .%,%,$(1))
-TOW=$(patsubst /%,%,$(ONE))
-../debug/$(TOW)%.o:$(1)/%.cpp
-	g++ -g -c -o $$@ $$^ $(INCLUDE_DIR) 
-endef
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
+	@echo -e "\033[32mBuilding CXX object ../debug/$@\033[0m"
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
 
-#生成所有目录下所有 cpp 目标 
-$(foreach dir,$(ALL_DIR),$(eval $(call COMPILE_CPP,$(dir))))
-
-#清理目标
-clean :
-	rm -rf main 
-	find $(TARGET_DIR) -type f |xargs rm -rf 
+clean:
+	@$(RM) $(BIN_NAME)
+	@find ../debug -type f |xargs rm -rf
+	@echo "clean $(BIN_NAME)done!"

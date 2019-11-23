@@ -2,8 +2,7 @@
 #include "test.h"
 #include "self.h"
 
-void test()
+void test::display()
 {
-	self();
 	printf("this test\n");	
 }

@@ -1,6 +1,16 @@
 #ifndef ONE_H
 #define ONE_H
 
-void one();
+class one 
+{
+public:
+	void display();
+
+	static one* ins()
+	{
+		static one s;
+		return &s; 
+	}
+};
 
 #endif

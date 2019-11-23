@@ -9,11 +9,11 @@ void last();
 
 int main(int argc,char **argv)
 {
-	test();
-	one();
-	tow();
-	my();
-	self();
+	test::ins()->display();
+	one::ins()->display();
+	tow::ins()->display();
+	my::ins()->display();
+	self::ins()->display();
 	last();
 	printf("this main\n");
 	return 0;
