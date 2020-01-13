@@ -35,7 +35,7 @@ CUR_INCR=$(eval CUR_COUNT := $(shell expr $(CUR_COUNT) + 1))
 
 #依赖规则
 -include $(DEPS)
-OBJ_CMD = echo -e "[$(shell expr $(CUR_COUNT) '*' 100 / $(FILE_COUNT))% ]\033[32mBuilding CXX object $@\033[0m" 
+OBJ_CMD = echo -e "[$(shell expr $(CUR_COUNT) '*' 100 / $(FILE_COUNT))%] $(CUR_COUNT)/$(FILE_COUNT)\033[32mBuilding CXX object $@\033[0m" 
 
 #目标
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
@@ -44,7 +44,7 @@ $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
 
 ifndef STATISTICS 
-FILE_COUNT := $(shell make $(MAKECMDGOALS) STATISTICS=1 -nrRf $(MAKEFILE_LIST) 2>/dev/null|grep -c "Building CXX object") 
+FILE_COUNT:=$(shell make $(MAKECMDGOALS) STATISTICS=1 -nrRf $(MAKEFILE_LIST) 2>/dev/null|grep -c "Building CXX object") 
 endif
 
 #清理临时文件
