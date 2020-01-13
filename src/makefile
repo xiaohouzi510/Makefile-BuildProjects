@@ -18,13 +18,15 @@ CUR_DIR = $(shell pwd)
 OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 #依赖文件
 DEPS = $(OBJECTS:.o=.d)
+DIRS = $(shell find $(SRC_PATH) -type d)
+DIRS := $(patsubst .%,$(BUILD_PATH)%,$(DIRS))
 
 debug: dirs
 	@$(MAKE) $(BIN_NAME) --no-print-directory
 
 #创建目录
 dirs:
-	@mkdir -p $(dir $(OBJECTS))
+	@mkdir -p $(DIRS)
 
 #可执行文件
 $(BIN_NAME): $(OBJECTS)
@@ -41,7 +43,7 @@ OBJ_CMD = echo -e "[$(shell expr $(CUR_COUNT) '*' 100 / $(FILE_COUNT))%] $(CUR_C
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@$(CUR_INCR)
 	@$(OBJ_CMD)
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -MMD -c $< -o $@
 
 ifndef STATISTICS 
 FILE_COUNT:=$(shell make $(MAKECMDGOALS) STATISTICS=1 -nrRf $(MAKEFILE_LIST) 2>/dev/null|grep -c "Building CXX object") 
